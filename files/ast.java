@@ -190,6 +190,10 @@ class FormalsListNode extends ASTnode {
             }
         } 
     }
+    
+    public List<FormalDeclNode> getFormalList() {
+        return myFormals;
+    }
 
     // list of kids (FormalDeclNodes)
     private List<FormalDeclNode> myFormals;
@@ -274,20 +278,49 @@ class VarDeclNode extends DeclNode {
     
     public void nameAnalysis(SymTable s) {
         boolean isGood = true;
+        boolean isStruct = false;
+        SemSym structAlias;
         
+	    // If type is a struct, check for validity
+        // ** currently only producing "invalid name of struct error"
+	    if(myType.toString().equals("struct")) {
+            SemSym temp = s.lookupGlobalWithType(myId.toString(), "struct");
+            if(temp == null) {
+                isGood = false;
+                IdNode structId = myType.getId().toString() // gets the struct id name
+                ErrMsg.fatal(structId.getLineNum(), structId.getCharNum(), "Invalid name of struct type");
+            }
+            else {
+                isStruct = true;
+                structAlias = temp;
+            }
+	    }
+	    // check for bad declaration (void)
         if (myType.toString().equals("void")) {
             isGood = false;
             ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Non-function declared void");
         }
-        
+            
+	    // Check for multiply declared id
         if (s.lookupLocal(myId.toString()) != null) {
             isGood = false;
             ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Multiply declared identifier");
         }
-        
-        if (isGood) {   
-            SemSym sym = new SemSym(myType.toString());
-            s.addDecl(myId.toString(), sym);
+            
+        if (isGood) {
+            SemSym sym;
+            
+            // If variable is a struct, need to link new id with the struct and its fields
+            if(isStruct) {
+                sym = new StructSym("struct", myType.getId().toString());
+                sym.members = structAlias.members; // copy over members to new struct variable
+            }
+            
+            // Non-Struct
+            else {
+                sym = new SemSym(myType.toString());
+            }
+            myId.nameAnalysis(s, sym);
         }
     }
 
@@ -316,6 +349,21 @@ class FnDeclNode extends DeclNode {
         myId = id;
         myFormalsList = formalList;
         myBody = body;
+    }
+    
+    public void nameAnalysis() {
+        if (s.lookupLocal(myId.toString()) != null) {
+            ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Multiply declared identifier");
+        }
+        else {
+        
+         
+            List<String> formalTypes = new LinkedList<String>();
+            List<String> formalNames = new LinkedList<String>();
+            
+            
+            SemSym sym = new FunctionSym()
+        }
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -349,6 +397,9 @@ class FormalDeclNode extends DeclNode {
         myId.unparse(p, 0);
     }
 
+    public TypeNode getType() {
+        return myType;
+    }
     // 2 kids
     private TypeNode myType;
     private IdNode myId;
@@ -361,20 +412,19 @@ class StructDeclNode extends DeclNode {
     }
     
     public void nameAnalysis(SymTable s) {
-        boolean isGood = true;
         
         if (s.lookupLocal(myId.toString()) != null) {
             isGood = false;
             ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Multiply declared identifier");
-            return;
+            return; // Invalid func
         }
         
         SemSym sym = new StructSym("struct");
-        s.addDecl(myId.toString(), sym);
+        s.addDecl(myId.toString(), sym); // add struct to current scope
         
-        SymTable temp = new SymTable();
-        myDeclList.nameAnalysis(temp);
-        sym.members = temp;
+        SymTable sFields = new SymTable(); // Sym table for the structs fields
+        myDeclList.nameAnalysis(sFields);  // Could just be list?
+        sym.members = sFields; // what if fields are incorrect?
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -398,7 +448,7 @@ class StructDeclNode extends DeclNode {
 // **********************************************************************
 
 abstract class TypeNode extends ASTnode {
-    abstract public String toString();
+    abstract public String toString(); // returns type
 }
 
 class IntNode extends TypeNode {
@@ -452,6 +502,11 @@ class StructNode extends TypeNode {
 
     public String toString() {
         return new String("struct");
+    }
+    
+    // Returns Id of struct for error purposes
+    public IdNode getId() {
+        return myId;
     }
 	
 	// 1 kid
@@ -733,6 +788,12 @@ class IdNode extends ExpNode {
         myCharNum = charNum;
         myStrVal = strVal;
     }
+    
+    public void nameAnalysis(SymTable s, SemSym idSym) {
+        s.addDecl(myStrVal, idSym);
+        sym = idSym; // create link to this symbol. Used for unparsing
+    
+    }
     public void unparse(PrintWriter p, int indent) {
         p.print(myStrVal);
     }
@@ -740,6 +801,7 @@ class IdNode extends ExpNode {
     private int myLineNum;
     private int myCharNum;
     private String myStrVal;
+    private SemSym sym;
 }
 
 class DotAccessExpNode extends ExpNode {

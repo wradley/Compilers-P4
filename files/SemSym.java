@@ -21,9 +21,15 @@ public class FunctionSym extends SemSym
 
 public class StructSym extends SemSym
 {
-    public StructSym(String type) {
+    public SymTable members;
+    private structName; // If struct var is created, will keep track of structs name
+    
+    public StructSym(String type, String sName) {
         super(type);
+        structName = sName;
     }
     
-    public SymTable members;
+    public String getStructName() {
+        return structName;
+    }
 }

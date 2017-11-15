@@ -47,6 +47,19 @@ public class SymTable {
         return null;
     }
     
+    // looks up symbol name with its type
+    public SemSym lookupGlobalWithType(String name, String type) {
+        if (list.isEmpty())
+            return null;
+        
+        for (HashMap<String, SemSym> symTab : list) {
+            SemSym sym = symTab.get(name);
+            if (sym != null && sym.getType().equals(type)
+                return sym;
+        }
+        return null;
+    }
+	
     public void removeScope() throws EmptySymTableException {
         if (list.isEmpty())
             throw new EmptySymTableException();
