@@ -366,6 +366,7 @@ class StructDeclNode extends DeclNode {
         if (s.lookupLocal(myId.toString()) != null) {
             isGood = false;
             ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Multiply declared identifier");
+            return;
         }
         
         SemSym sym = new StructSym("struct");
