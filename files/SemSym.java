@@ -13,3 +13,17 @@ public class SemSym {
         return type;
     }
 }
+
+public class FunctionSym extends SemSym
+{
+}
+
+
+public class StructSym extends SemSym
+{
+    public StructSym(String type) {
+        super(type);
+    }
+    
+    public SymTable members;
+}

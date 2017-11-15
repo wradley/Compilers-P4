@@ -130,9 +130,8 @@ class ProgramNode extends ASTnode {
      * Creates an empty symbol table for the outermost scope, then processes
      * all of the globals, struct defintions, and functions in the program.
      */
-    public void nameAnalysis() {
-        SymTable symTab = new SymTable();
-	// TODO: Add code here 
+    public void nameAnalysis(SymTable s) {
+        myDeclList.nameAnalysis(s);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -146,6 +145,12 @@ class ProgramNode extends ASTnode {
 class DeclListNode extends ASTnode {
     public DeclListNode(List<DeclNode> S) {
         myDecls = S;
+    }
+
+    public void nameAnalysis(SymTable s) {
+        for (int i = 0; i < myDecls.size(); i++) {
+            myDecls.get(i).nameAnalysis(s);
+        }
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -169,6 +174,12 @@ class FormalsListNode extends ASTnode {
         myFormals = S;
     }
 
+    public void nameAnalysis(SymTable s) {
+        for (int i = 0; i < myFormals.size(); i++) {
+            myFormals.get(i).nameAnalysis(s);
+        }
+    }
+
     public void unparse(PrintWriter p, int indent) {
         Iterator<FormalDeclNode> it = myFormals.iterator();
         if (it.hasNext()) { // if there is at least one element
@@ -190,6 +201,11 @@ class FnBodyNode extends ASTnode {
         myStmtList = stmtList;
     }
 
+    public void nameAnalysis(SymTable s) {
+        myDeclList.nameAnalysis(s);
+        myStmtList.nameAnalysis(s);
+    }
+
     public void unparse(PrintWriter p, int indent) {
         myDeclList.unparse(p, indent);
         myStmtList.unparse(p, indent);
@@ -203,6 +219,12 @@ class FnBodyNode extends ASTnode {
 class StmtListNode extends ASTnode {
     public StmtListNode(List<StmtNode> S) {
         myStmts = S;
+    }
+
+    public void nameAnalysis(SymTable s) {
+        for (int i = 0; i < myStmts.size(); i++) {
+            myStmts.get(i).nameAnalysis(s);
+        }
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -248,6 +270,25 @@ class VarDeclNode extends DeclNode {
         myType = type;
         myId = id;
         mySize = size;
+    }
+    
+    public void nameAnalysis(SymTable s) {
+        boolean isGood = true;
+        
+        if (myType.toString().equals("void")) {
+            isGood = false;
+            ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Non-function declared void");
+        }
+        
+        if (s.lookupLocal(myId.toString()) != null) {
+            isGood = false;
+            ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Multiply declared identifier");
+        }
+        
+        if (isGood) {   
+            SemSym sym = new SemSym(myType.toString());
+            s.addDecl(myId.toString(), sym);
+        }
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -318,6 +359,22 @@ class StructDeclNode extends DeclNode {
         myId = id;
         myDeclList = declList;
     }
+    
+    public void nameAnalysis(SymTable s) {
+        boolean isGood = true;
+        
+        if (s.lookupLocal(myId.toString()) != null) {
+            isGood = false;
+            ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Multiply declared identifier");
+        }
+        
+        SemSym sym = new StructSym("struct");
+        s.addDecl(myId.toString(), sym);
+        
+        SymTable temp = new SymTable();
+        myDeclList.nameAnalysis(temp);
+        sym.members = temp;
+    }
 
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
@@ -340,6 +397,7 @@ class StructDeclNode extends DeclNode {
 // **********************************************************************
 
 abstract class TypeNode extends ASTnode {
+    abstract public String toString();
 }
 
 class IntNode extends TypeNode {
@@ -348,6 +406,10 @@ class IntNode extends TypeNode {
 
     public void unparse(PrintWriter p, int indent) {
         p.print("int");
+    }
+
+    public String toString() {
+        return new String("int");
     }
 }
 
@@ -358,6 +420,10 @@ class BoolNode extends TypeNode {
     public void unparse(PrintWriter p, int indent) {
         p.print("bool");
     }
+
+    public String toString() {
+        return new String("bool");
+    }
 }
 
 class VoidNode extends TypeNode {
@@ -366,6 +432,10 @@ class VoidNode extends TypeNode {
 
     public void unparse(PrintWriter p, int indent) {
         p.print("void");
+    }
+
+    public String toString() {
+        return new String("void");
     }
 }
 
@@ -377,6 +447,10 @@ class StructNode extends TypeNode {
     public void unparse(PrintWriter p, int indent) {
         p.print("struct ");
 		myId.unparse(p, 0);
+    }
+
+    public String toString() {
+        return new String("struct");
     }
 	
 	// 1 kid
@@ -658,7 +732,6 @@ class IdNode extends ExpNode {
         myCharNum = charNum;
         myStrVal = strVal;
     }
-
     public void unparse(PrintWriter p, int indent) {
         p.print(myStrVal);
     }
