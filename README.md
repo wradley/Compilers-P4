@@ -1,2 +1,2 @@
-# Compilers-P4
-Project 4 for Compilers 536
+# Compilers Project 4
+Semantic analysis.
