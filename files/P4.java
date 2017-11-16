@@ -57,9 +57,8 @@ public class P4 {
         }
 
         // semantic 
-        LinkedList<SymTable> list = new LinkedList<SymTable>();
         try {
-            
+            ((ProgramNode)root.value).nameAnalysis();
         } catch (Exception ex) {
             
         }

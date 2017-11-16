@@ -1,0 +1,22 @@
+struct BigPappa
+{
+    bool likesKyle;
+};
+
+
+void kylesFunc()
+{
+    bool a;
+    bool b;
+    struct BigPappa randomDad;
+    a = true;
+    b = true;
+    a = a + b;
+    if (a == b) {
+        cout << "str";
+    }
+
+    if (randomDad.likesKyle) {
+        cout << "need to call police";
+    }
+}

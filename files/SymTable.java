@@ -54,7 +54,7 @@ public class SymTable {
         
         for (HashMap<String, SemSym> symTab : list) {
             SemSym sym = symTab.get(name);
-            if (sym != null && sym.getType().equals(type)
+            if (sym != null && sym.getType().equals(type))
                 return sym;
         }
         return null;

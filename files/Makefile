@@ -11,8 +11,8 @@ JC = javac
 CP = ../deps_src/java-cup-11b.jar:../deps_src/java-cup-11b-runtime.jar:../deps_src:.
 FLAGS = -g -cp $(CP)
 
-P3.class: P3.java parser.class Yylex.class ASTnode.class
-	$(JC) $(FLAGS)  P3.java
+P4.class: P4.java parser.class Yylex.class ASTnode.class
+	$(JC) $(FLAGS)  P4.java SemSym.java StructSym.java FunctionSym.java
 
 parser.class: parser.java ASTnode.class Yylex.class ErrMsg.class
 	$(JC) $(FLAGS) parser.java
@@ -40,7 +40,7 @@ ErrMsg.class: ErrMsg.java
 
 ##test
 test:
-	java -cp $(CP) P3 test.cimple test.out
+	java -cp $(CP) P4 test2.cimple test.out
 
 ###
 # clean
