@@ -362,21 +362,27 @@ class FnDeclNode extends DeclNode {
     }
 
     public void nameAnalysis(SymTable s) {
-        if (s.lookupLocal(myId.toString()) != null) {
+	
+	FunctionSym sym = null; 
+        
+	if (s.lookupLocal(myId.toString()) != null) {
             ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Multiply declared identifier");
         }
         else {
             LinkedList<SemSym> list = new LinkedList<SemSym>();
-            FunctionSym sym = new FunctionSym(myType.toString());
+            sym = new FunctionSym(myType.toString());
             try {
                 s.addDecl(myId.toString(), sym);
             } catch (Exception e) {}
             sym.formals = list;
         }
         s.addScope();
-        myFormalsList.nameAnalysis(s, null);
+        myFormalsList.nameAnalysis(s, sym);
         myBody.nameAnalysis(s);
-
+        try {
+            s.removeScope();
+        }
+        catch (Exception E) {}
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -404,7 +410,7 @@ class FormalDeclNode extends DeclNode {
         myId = id;
     }
 
-    public void nameAnalysis(SymTable s) {}
+    public void nameAnalysis(SymTable s) {} 
     public void nameAnalysis(SymTable s, FunctionSym f) {
 
         boolean isGood = true;
@@ -421,8 +427,11 @@ class FormalDeclNode extends DeclNode {
 
         if(isGood) {
             SemSym sym = new SemSym(myType.toString());
-            f.formals.add(sym);
-
+	    
+            // Only add parameter to this functions formal list if the function was valid
+		    if(f != null) {
+              	f.formals.add(sym);
+	        }
             // Add to symbol table
 
             try {

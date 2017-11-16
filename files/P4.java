@@ -60,11 +60,15 @@ public class P4 {
         try {
             ((ProgramNode)root.value).nameAnalysis();
         } catch (Exception ex) {
-            
+            System.err.println("Exception occured during semantic name analysis: " + ex);
+            System.exit(-1);
         }
  
-        ((ASTnode)root.value).unparse(outFile, 0);
-        outFile.close();
+        // only unparse if the semantic analyizer was successful
+	    if (!ErrMsg.hadFatalError()) {
+            ((ASTnode)root.value).unparse(outFile, 0);
+            outFile.close();
+        }
         
        
         return;

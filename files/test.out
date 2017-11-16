@@ -44,31 +44,32 @@ int functionThree() {
 
 bool functionTwo(int a, bool b) {
     struct MyStruct myStruct;
-    (myStruct).myBool = globalBool;
-    (myStruct).myInt = globalInt;
-    (myStruct).myBool = b;
-    (myStruct).myInt = a;
+    (myStruct(MyStruct)).myBool(bool) = globalBool(bool);
+    (myStruct(MyStruct)).myInt(int) = globalInt(int);
+    (myStruct(MyStruct)).myBool(bool) = b(bool);
+    (myStruct(MyStruct)).myInt(int) = a(int);
 }
 
 void functionOne() {
     int globalBool;
     bool globalInt;
-    globalBool = 10;
-    globalInt = false;
-    if (functionTwo(globalBool, globalInt)) {
-        return;
+    int returnVal;
+    globalBool(int) = 10;
+    globalInt(bool) = false;
+    if (functionTwo(int,bool->bool)(globalBool(int), globalInt(bool))) {
+        return returnVal(int);
     }
     else {
-        globalBool = functionThree();
+        globalBool(int) = functionThree(->int)();
     }
 }
 
 int main() {
-    globalBool = true;
-    globalInt = 42;
-    (globalStruct).myBool = false;
-    (globalStruct).myInt = 12;
-    functionOne();
+    globalBool(bool) = true;
+    globalInt(int) = 42;
+    (globalStruct(MyStruct)).myBool(bool) = false;
+    (globalStruct(MyStruct)).myInt(int) = 12;
+    functionOne(->void)();
     return 0;
 }
 
