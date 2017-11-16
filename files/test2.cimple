@@ -1,22 +1,106 @@
-struct BigPappa
+// declare a struct
+struct MyStruct
 {
-    bool likesKyle;
+    bool myBool;
+    int myInt;
 };
 
+// declare some global variables to test scoping later
+bool globalBool;
+int globalInt;
+struct MyStruct globalStruct;
 
-void kylesFunc()
+
+bool functionFour()
 {
-    bool a;
-    bool b;
-    struct BigPappa randomDad;
-    a = true;
-    b = true;
-    a = a + b;
-    if (a == b) {
-        cout << "str";
+    bool localBool;
+    localBool = false;
+
+    // test stmts
+    while (globalInt > 100)
+    {
+        if (functionFour())
+        {
+            if (!localBool)
+            {
+                cout << "Local Bool";
+                globalStruct.myBool = localBool;
+                globalStruct.myInt = 1;
+            }
+
+            else
+            {
+                cout << "Local bool failed me";
+                globalBool = -globalInt < 120120;
+                globalInt = 123;
+            }
+        }
+    }
+}
+
+int functionThree()
+{
+    // check the variable types to make sure they are stored properly
+    int localIntA;
+    int localIntB;
+    bool localBool;
+
+    localIntA = 120;
+    localIntB = 121;
+    localBool = true;
+
+    globalInt = localIntA + localIntB;
+    globalInt = localIntA - localIntB;
+    globalInt = localIntA * localIntB;
+    globalInt = localIntA / localIntB;
+    globalInt++;
+    globalInt--;
+    globalInt = -(localIntA + localIntB);
+    globalBool = !localBool;
+}
+
+bool functionTwo(int a, bool b)
+{
+    // testing the struct and the dot access
+    struct MyStruct myStruct;
+    myStruct.myBool = globalBool;
+    myStruct.myInt = globalInt;
+
+    myStruct.myBool = b;
+    myStruct.myInt = a;
+}
+
+void functionOne()
+{
+    // local override
+    int globalBool;
+    bool globalInt;
+
+    globalBool = 10;
+    globalInt = false;
+
+    // function return parameter
+    if (functionTwo(globalBool, globalInt))
+    {
+        return;
     }
 
-    if (randomDad.likesKyle) {
-        cout << "need to call police";
+    else
+    {
+        globalBool = functionThree();
     }
+}
+
+int main()
+{
+    // access to global scope
+    globalBool = true;
+    globalInt = 42;
+    globalStruct.myBool = false;
+    globalStruct.myInt = 12;
+
+    // call a function
+    functionOne();
+
+    return 0;
 }

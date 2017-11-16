@@ -1,19 +1,74 @@
-struct BigPappa{
-    bool likesKyle;
+struct MyStruct{
+    bool myBool;
+    int myInt;
 };
 
-void kylesFunc() {
-    bool a;
-    bool b;
-    struct BigPappa randomDad;
-    a(bool) = true;
-    b(bool) = true;
-    a(bool) = (a(bool) + b(bool));
-    if ((a(bool) == b(bool))) {
-        cout << "str";
+bool globalBool;
+int globalInt;
+struct MyStruct globalStruct;
+bool functionFour() {
+    bool localBool;
+    localBool(bool) = false;
+    while ((globalInt(int) > 100)) {
+        if (functionFour(->bool)()) {
+            if ((!localBool(bool))) {
+                cout << "Local Bool";
+                (globalStruct(MyStruct)).myBool(bool) = localBool(bool);
+                (globalStruct(MyStruct)).myInt(int) = 1;
+            }
+            else {
+                cout << "Local bool failed me";
+                globalBool(bool) = ((-globalInt(int)) < 120120);
+                globalInt(int) = 123;
+            }
+        }
     }
-    if ((randomDad(BigPappa)).likesKyle(bool)) {
-        cout << "need to call police";
+}
+
+int functionThree() {
+    int localIntA;
+    int localIntB;
+    bool localBool;
+    localIntA(int) = 120;
+    localIntB(int) = 121;
+    localBool(bool) = true;
+    globalInt(int) = (localIntA(int) + localIntB(int));
+    globalInt(int) = (localIntA(int) - localIntB(int));
+    globalInt(int) = (localIntA(int) * localIntB(int));
+    globalInt(int) = (localIntA(int) / localIntB(int));
+    globalInt(int)++;
+    globalInt(int)--;
+    globalInt(int) = (-(localIntA(int) + localIntB(int)));
+    globalBool(bool) = (!localBool(bool));
+}
+
+bool functionTwo(int a, bool b) {
+    struct MyStruct myStruct;
+    (myStruct).myBool = globalBool;
+    (myStruct).myInt = globalInt;
+    (myStruct).myBool = b;
+    (myStruct).myInt = a;
+}
+
+void functionOne() {
+    int globalBool;
+    bool globalInt;
+    globalBool = 10;
+    globalInt = false;
+    if (functionTwo(globalBool, globalInt)) {
+        return;
     }
+    else {
+        globalBool = functionThree();
+    }
+}
+
+int main() {
+    globalBool = true;
+    globalInt = 42;
+    (globalStruct).myBool = false;
+    (globalStruct).myInt = 12;
+    functionOne();
+    return 0;
 }
 
